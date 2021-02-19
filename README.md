@@ -56,7 +56,7 @@ Adicionar os badges com as informações do CI.
 
 # Documentação da API
 
-Link para o html de documentação da API.
+Veja [aqui](https://johannesssf.github.io/physical-legal-goods-api/).
 
 # Como subir a aplicação
 
