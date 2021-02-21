@@ -3,3 +3,4 @@ Pipfile*
 db.sqlite3
 .vscode
 __pycache__
+.pytest_cache
