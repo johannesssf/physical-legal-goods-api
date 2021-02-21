@@ -11,6 +11,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: "O}jLTlkS{Ya);>ep#\\#(,Cww9N}zx-sI6{>@R0Csomefakekey"
 
     steps:
     - uses: actions/checkout@v2
@@ -35,4 +37,4 @@ jobs:
         python manage.py migrate api
     - name: Test with django
       run: |
-        python manager.py test
+        python manage.py test
