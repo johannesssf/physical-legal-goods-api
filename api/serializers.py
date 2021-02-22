@@ -1,4 +1,4 @@
-from .models import PhysicalPerson, LegalPerson
+from .models import Good, PhysicalPerson, LegalPerson
 from rest_framework import serializers
 
 
@@ -22,3 +22,9 @@ class LegalPersonSerializer(serializers.ModelSerializer):
             'email',
             'phone_number',
         ]
+
+
+class GoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Good
+        fields = ['id', 'good_type', 'description', 'owner']

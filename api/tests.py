@@ -5,8 +5,12 @@ from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from .models import PhysicalPerson, LegalPerson, Good
-from .serializers import LegalPersonSerializer, PhysicalPersonSerializer
+from .models import Good, LegalPerson, PhysicalPerson
+from .serializers import (
+    GoodSerializer,
+    LegalPersonSerializer,
+    PhysicalPersonSerializer
+)
 
 
 class PhysicalPersonModelTest(TestCase):
@@ -239,4 +243,95 @@ class LegalPeopleAPITest(TestCase):
 
         self.assertEquals(request.status_code, status.HTTP_200_OK)
         records = LegalPerson.objects.filter(pk=1)
+        self.assertEquals(len(records), 0)
+
+
+class GoodsAPITest(TestCase):
+    RECORDS_NUM = 4
+
+    def setUp(self):
+        self.client = APIClient()
+
+        for _ in range(self.RECORDS_NUM):
+            good = baker.make(Good)
+            good.save()
+
+    def test_goods_get_list(self):
+        records = Good.objects.all()
+        request = self.client.get('/v1/goods/')
+
+        self.assertEquals(request.status_code, status.HTTP_200_OK)
+        self.assertEquals(len(json.loads(request.content)), len(records))
+
+    def test_goods_post(self):
+        new_record = {
+            'good_type': 'imovel',
+            'description': 'Some good description',
+            'owner': '25845675391'
+        }
+        request = self.client.post(
+            '/v1/goods/',
+            json.dumps(new_record),
+            content_type='application/json'
+        )
+        self.assertEquals(request.status_code, status.HTTP_201_CREATED)
+        good = Good.objects.get(description=new_record['description'])
+        self.assertEquals(good.description, new_record['description'])
+
+    def test_goods_post_invalid_type(self):
+        new_record = GoodSerializer(baker.make(Good)).data
+        new_record['good_type'] = 'carro'
+
+        request = self.client.post(
+            '/v1/goods/',
+            json.dumps(new_record),
+            content_type='application/json'
+        )
+        self.assertEquals(request.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_goods_get(self):
+        record = Good.objects.get(pk=1)
+        request = self.client.get(f'/v1/goods/{record.id}/')
+        data = json.loads(request.content)
+
+        self.assertEquals(request.status_code, status.HTTP_200_OK)
+        self.assertEquals(record.id, data['id'])
+        self.assertEquals(record.good_type, data['good_type'])
+        self.assertEquals(record.description, data['description'])
+        self.assertEquals(record.owner, data['owner'])
+
+    def test_goods_non_existent_id(self):
+        request = self.client.get(f'/v1/goods/{999}/')
+        self.assertEquals(request.status_code, 404)
+
+    def test_goods_put(self):
+        record = Good.objects.get(pk=1)
+        data = GoodSerializer(record).data
+        data['owner'] = '25845675391'
+        request = self.client.put(
+            f'/v1/goods/{data["id"]}/',
+            json.dumps(data),
+            content_type='application/json'
+        )
+        self.assertEquals(request.status_code, status.HTTP_200_OK)
+        record = Good.objects.get(pk=1)
+        self.assertEquals(record.owner, data['owner'])
+
+    def test_goods_put_invalid_owner(self):
+        record = Good.objects.get(pk=1)
+        data = GoodSerializer(record).data
+        data['owner'] = '111222333444555'
+        request = self.client.put(
+            f'/v1/goods/{data["id"]}/',
+            json.dumps(data),
+            content_type='application/json'
+        )
+        self.assertEquals(request.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_goods_delete(self):
+        record = Good.objects.get(pk=1)
+        request = self.client.delete(f'/v1/goods/{record.id}/')
+
+        self.assertEquals(request.status_code, status.HTTP_200_OK)
+        records = Good.objects.filter(pk=1)
         self.assertEquals(len(records), 0)
