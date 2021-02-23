@@ -9,6 +9,7 @@ Este projeto consiste em uma API REST utilizada para controlar o cadastro e cons
 * [Requisitos não funcionais](#Requisitos_não_funcionais)
 * [Documentação da API](#Documentação_da_API)
 * [Como subir a aplicação](#Como_subir_a_aplicação)
+* [Pontos de melhoria](#Pontos_de_melhoria)
 
 # Status do projeto
 
@@ -66,24 +67,31 @@ Veja [aqui](https://johannesssf.github.io/physical-legal-goods-api/).
 
 # Como subir a aplicação
 
-## Build da imagem
+## Fazer o build da imagem
 
-1. Baixe o arquivo _Dockerfile_
+Baixe o arquivo _Dockerfile_ e execute o comando de build
 
-        wget https://github.com/johannesssf/physical-legal-goods-api/blob/main/Dockerfile
+        $ wget https://github.com/johannesssf/physical-legal-goods-api/blob/main/Dockerfile
+        $ docker build --rm -t physical-legal-goods-api:latest .
 
-1. Executar o comando a seguir para fazer o _build_ da imagem
+## Fazer o pull da imagem pronta
 
-        docker build --rm -t physical-legal-goods-api:latest .
+Baixar uma imagem já pronta
 
-1. Executar o comando a seguir para iniciar o container
+        $ docker pull johannesssf/physical-legal-goods-api:latest
 
-        docker container run -d -p 8000:8000 physical-legal-goods-api
+## Executar alguns comandos para testar
 
-1. Executar os comando a seguir para consultar e criar um registro
+Comando para iniciar o container
 
-        curl -i -X GET http://localhost:8000/v1/physical-people/
+        $ docker container run -d -p 8000:8000 physical-legal-goods-api
 
-        curl -i -X POST http://localhost:8000/v1/physical-people/ -H "Content-Type: application/json" -d '{"cpf": "25845675391", "name": "Fulano da Silva", "zipcode": "55632148", "email": "fulano@email.com", "phone_number": "48999521756"}'
+Comando para consultar e criar um registro
 
-        curl -i -X GET http://localhost:8000/v1/physical-people/
+        $ curl -i -X GET http://localhost:8000/v1/physical-people/
+        $ curl -i -X POST http://localhost:8000/v1/physical-people/ -H "Content-Type: application/json" -d '{"cpf": "25845675391", "name": "Fulano da Silva", "zipcode": "55632148", "email": "fulano@email.com", "phone_number": "48999521756"}'
+        $ curl -i -X GET http://localhost:8000/v1/physical-people/
+
+# Pontos de melhoria
+
+    Adicionar o que ainda pode ser melhorado.

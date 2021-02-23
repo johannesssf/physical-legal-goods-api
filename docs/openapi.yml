@@ -7,11 +7,10 @@ info:
   associados à essas pessoas.'
 
 servers:
-  - url: https://localhost/v1
-  - url: https://mytestenv.com/v1
+  - url: http://localhost:8000/v1
 
 paths:
-  /physical-people:
+  /physical-people/:
     get:
       description: Consulta as pessoas físicas cadastradas
       responses:
@@ -51,7 +50,7 @@ paths:
                   "message": "Parâmetros faltando ou com valores inválidos"
                 }
 
-  /physical-people/{id}:
+  /physical-people/{id}/:
     parameters:
     - name: id
       in: path
@@ -100,7 +99,7 @@ paths:
         '404':
           description: Registro não encontrado
 
-  /legal-person:
+  /legal-person/:
     get:
       description: Consulta as pessoas jurídicas cadastradas
       responses:
@@ -140,7 +139,7 @@ paths:
                   "message": "Parâmetros faltando ou com valores inválidos"
                 }
 
-  /legal-people/{id}:
+  /legal-people/{id}/:
     parameters:
     - name: id
       in: path
@@ -189,7 +188,7 @@ paths:
         '404':
           description: Registro não encontrado
 
-  /goods:
+  /goods/:
     get:
       description: Consulta os bens cadastrados
       responses:
@@ -229,7 +228,7 @@ paths:
                   "message": "Parâmetros faltando ou com valores inválidos"
                 }
 
-  /goods/{id}:
+  /goods/{id}/:
     parameters:
     - name: id
       in: path
