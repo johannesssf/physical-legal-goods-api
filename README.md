@@ -10,9 +10,15 @@ Este projeto consiste em uma API REST utilizada para controlar o cadastro e cons
 * [Documentação da API](#Documentação_da_API)
 * [Como subir a aplicação](#Como_subir_a_aplicação)
 
-# Status do build
+# Status do projeto
 
-Adicionar os badges com as informações do CI.
+## Status do build
+
+![GitHub branch checks state](https://img.shields.io/github/checks-status/johannesssf/physical-legal-goods-api/main?style=plastic)
+
+## Cobertura
+
+![Codecov branch](https://img.shields.io/codecov/c/github/johannesssf/physical-legal-goods-api/main)
 
 # Requisitos funcionais
 
