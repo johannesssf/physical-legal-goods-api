@@ -66,4 +66,24 @@ Veja [aqui](https://johannesssf.github.io/physical-legal-goods-api/).
 
 # Como subir a aplicação
 
-Descrever o procedimento para subir um container com a aplicação.
+## Build da imagem
+
+1. Baixar o arquivo _Dockerfile_
+
+    wget https://github.com/johannesssf/physical-legal-goods-api/blob/main/Dockerfile
+
+1. Executar o comando a seguir para fazer o _build_ da imagem
+
+    docker build --rm -t physical-legal-goods-api:latest .
+
+1. Executar o comando a seguir para iniciar o container
+
+    docker container run -d -p 8000:8000 physical-legal-goods-api
+
+1. Executar os comando a seguir para consultar e criar um registro
+
+    curl -i -X GET http://localhost:8000/v1/physical-people/
+
+    curl -i -X POST http://localhost:8000/v1/physical-people/ -H "Content-Type: application/json" -d '{"cpf": "25845675391", "name": "Fulano da Silva", "zipcode": "55632148", "email": "fulano@email.com", "phone_number": "48999521756"}'
+
+    curl -i -X GET http://localhost:8000/v1/physical-people/
