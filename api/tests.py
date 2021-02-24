@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from model_bakery import baker
 from rest_framework import status
@@ -14,6 +15,8 @@ from .serializers import (
 
 
 class PhysicalPersonModelTest(TestCase):
+    """Tests to validade the model."""
+
     def test_physical_person_creation(self):
         physical_person = PhysicalPerson.objects.create(
             cpf="25845675391",
@@ -26,6 +29,8 @@ class PhysicalPersonModelTest(TestCase):
 
 
 class LegalPersonModelTest(TestCase):
+    """Tests to validade the model."""
+
     def test_legal_person_creation(self):
         legal_person = LegalPerson.objects.create(
             cnpj="12345678900013",
@@ -41,6 +46,8 @@ class LegalPersonModelTest(TestCase):
 
 
 class GoodModelTest(TestCase):
+    """Tests to validade the model."""
+
     def test_good_creation(self):
         good = Good.objects.create(
             good_type="imovel",
@@ -50,11 +57,47 @@ class GoodModelTest(TestCase):
         self.assertIsNotNone(good)
 
 
+class APIAuthentication(TestCase):
+    """Tests the authentication access behavior."""
+
+    def setUp(self):
+        admin = get_user_model().objects.create(username='admin')
+        admin.set_password('asdf!@#$')
+        admin.save()
+
+    def test_access_without_credentials(self):
+        client = APIClient()
+        request = client.get('/v1/physical-people/')
+
+        self.assertEquals(request.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_access_invalid_credentials(self):
+        client = APIClient()
+        self.assertFalse(client.login(username="some-user", password="123456"))
+
+    def test_login_and_access_ok(self):
+        client = APIClient()
+        self.assertTrue(client.login(username="admin", password="asdf!@#$"))
+
+        request = client.get('/v1/physical-people/')
+        self.assertEquals(request.status_code, status.HTTP_200_OK)
+
+        request = client.get('/v1/legal-people/')
+        self.assertEquals(request.status_code, status.HTTP_200_OK)
+
+        request = client.get('/v1/goods/')
+        self.assertEquals(request.status_code, status.HTTP_200_OK)
+
+
 class PhysicalPeopleAPITest(TestCase):
+    """Tests to cover the physical-people endpoints."""
+
     RECORDS_NUM = 4
 
     def setUp(self):
+        admin = get_user_model().objects.create(username='admin')
         self.client = APIClient()
+        self.client.force_authenticate(user=admin)
 
         for _ in range(self.RECORDS_NUM):
             physical_person = baker.make(PhysicalPerson)
@@ -146,10 +189,13 @@ class PhysicalPeopleAPITest(TestCase):
 
 
 class LegalPeopleAPITest(TestCase):
+    """Tests to cover the legal-people endpoints."""
     RECORDS_NUM = 4
 
     def setUp(self):
+        admin = get_user_model().objects.create(username='admin')
         self.client = APIClient()
+        self.client.force_authenticate(user=admin)
 
         for _ in range(self.RECORDS_NUM):
             physical_person = baker.make(LegalPerson)
@@ -247,10 +293,14 @@ class LegalPeopleAPITest(TestCase):
 
 
 class GoodsAPITest(TestCase):
+    """Tests to cover the goods endpoints."""
+
     RECORDS_NUM = 4
 
     def setUp(self):
+        admin = get_user_model().objects.create(username='admin')
         self.client = APIClient()
+        self.client.force_authenticate(user=admin)
 
         for _ in range(self.RECORDS_NUM):
             good = baker.make(Good)

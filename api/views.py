@@ -1,7 +1,18 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
 
+from rest_framework.authentication import (
+    BasicAuthentication,
+    SessionAuthentication,
+)
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
 from .models import Good, LegalPerson, PhysicalPerson
 from .serializers import (
     GoodSerializer,
@@ -9,7 +20,9 @@ from .serializers import (
     PhysicalPersonSerializer
 )
 
-
+@api_view(['GET', 'POST'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 @csrf_exempt
 def physical_people_list(request):
     """
@@ -30,6 +43,9 @@ def physical_people_list(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+@api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 @csrf_exempt
 def physical_people_detail(request, id):
     """
@@ -57,6 +73,9 @@ def physical_people_detail(request, id):
         return HttpResponse(status=200)
 
 
+@api_view(['GET', 'POST'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 @csrf_exempt
 def legal_people_list(request):
     """
@@ -77,6 +96,9 @@ def legal_people_list(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+@api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 @csrf_exempt
 def legal_people_detail(request, id):
     """
@@ -104,6 +126,9 @@ def legal_people_detail(request, id):
         return HttpResponse(status=200)
 
 
+@api_view(['GET', 'POST'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 @csrf_exempt
 def goods_list(request):
     """
@@ -124,6 +149,9 @@ def goods_list(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+@api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 @csrf_exempt
 def goods_detail(request, id):
     """
