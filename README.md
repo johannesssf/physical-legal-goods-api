@@ -1,6 +1,6 @@
 # Descrição
 
-Este projeto consiste em uma API REST utilizada para controlar o cadastro e consulta de pessoas físicas, pessoas jurídicas e seus proprietários bem como o registro de bens e posses associados às essas pessoas.
+Este projeto consiste em uma API REST utilizada para controlar o cadastro e consulta de pessoas físicas, pessoas jurídicas e seus proprietários bem como o registro de bens e posses associados à estas.
 
 # Conteúdo
 
