@@ -8,42 +8,167 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Good',
+            name="Good",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('good_type', models.CharField(choices=[('imovel', 'imovel'), ('automovel', 'automovel'), ('empresa', 'empresa')], max_length=9)),
-                ('description', models.TextField()),
-                ('owner', models.CharField(max_length=14, validators=[django.core.validators.RegexValidator('^\\d{11,14}$', 'Invalid owner, must be a cpf or cnpj.')])),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "good_type",
+                    models.CharField(
+                        choices=[
+                            ("imovel", "imovel"),
+                            ("automovel", "automovel"),
+                            ("empresa", "empresa"),
+                        ],
+                        max_length=9,
+                    ),
+                ),
+                ("description", models.TextField()),
+                (
+                    "owner",
+                    models.CharField(
+                        max_length=14,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{11,14}$", "Invalid owner, must be a cpf or cnpj."
+                            )
+                        ],
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LegalPerson',
+            name="LegalPerson",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cnpj', models.CharField(max_length=14, unique=True, validators=[django.core.validators.RegexValidator('^\\d{14}$', 'Invalid CNPJ format.')])),
-                ('social_reason', models.CharField(max_length=200)),
-                ('fantasy_name', models.CharField(max_length=200)),
-                ('state_registration', models.CharField(max_length=9, validators=[django.core.validators.RegexValidator('^\\d{9}$', 'Invalid State Reg. format.')])),
-                ('zipcode', models.CharField(max_length=8, validators=[django.core.validators.RegexValidator('^\\d{8}$', 'Invalid zipcode format.')])),
-                ('email', models.EmailField(max_length=254)),
-                ('phone_number', models.CharField(max_length=12, validators=[django.core.validators.RegexValidator('^\\d{10,12}$', 'Invalid phone number.')])),
-                ('owner', models.CharField(max_length=14, validators=[django.core.validators.RegexValidator('^\\d{11,14}$', 'Invalid owner, must be a cpf or cnpj.')])),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "cnpj",
+                    models.CharField(
+                        max_length=14,
+                        unique=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{14}$", "Invalid CNPJ format."
+                            )
+                        ],
+                    ),
+                ),
+                ("social_reason", models.CharField(max_length=200)),
+                ("fantasy_name", models.CharField(max_length=200)),
+                (
+                    "state_registration",
+                    models.CharField(
+                        max_length=9,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{9}$", "Invalid State Reg. format."
+                            )
+                        ],
+                    ),
+                ),
+                (
+                    "zipcode",
+                    models.CharField(
+                        max_length=8,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{8}$", "Invalid zipcode format."
+                            )
+                        ],
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                (
+                    "phone_number",
+                    models.CharField(
+                        max_length=12,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{10,12}$", "Invalid phone number."
+                            )
+                        ],
+                    ),
+                ),
+                (
+                    "owner",
+                    models.CharField(
+                        max_length=14,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{11,14}$", "Invalid owner, must be a cpf or cnpj."
+                            )
+                        ],
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PhysicalPerson',
+            name="PhysicalPerson",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cpf', models.CharField(max_length=11, unique=True, validators=[django.core.validators.RegexValidator('^\\d{11}$', 'Invalid CPF format.')])),
-                ('name', models.CharField(max_length=200)),
-                ('zipcode', models.CharField(max_length=8, validators=[django.core.validators.RegexValidator('^\\d{8}$', 'Invalid zipcode format.')])),
-                ('email', models.EmailField(max_length=254)),
-                ('phone_number', models.CharField(max_length=12, validators=[django.core.validators.RegexValidator('^\\d{10,12}$', 'Invalid phone number.')])),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "cpf",
+                    models.CharField(
+                        max_length=11,
+                        unique=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{11}$", "Invalid CPF format."
+                            )
+                        ],
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                (
+                    "zipcode",
+                    models.CharField(
+                        max_length=8,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{8}$", "Invalid zipcode format."
+                            )
+                        ],
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                (
+                    "phone_number",
+                    models.CharField(
+                        max_length=12,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{10,12}$", "Invalid phone number."
+                            )
+                        ],
+                    ),
+                ),
             ],
         ),
     ]
