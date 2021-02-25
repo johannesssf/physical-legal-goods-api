@@ -20,6 +20,17 @@ from .serializers import (
     PhysicalPersonSerializer
 )
 
+
+def check_owner_exists(owner):
+    """Check if owner exists in DB it could be a physical or legal person.
+    """
+    physical_person = PhysicalPerson.objects.filter(cpf=owner).count()
+    legal_person = LegalPerson.objects.filter(cnpj=owner).count()
+    if physical_person == 0 and legal_person == 0:
+        return False
+    return True
+
+
 @api_view(['GET', 'POST'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -91,8 +102,15 @@ def legal_people_list(request):
         serializer = LegalPersonSerializer(data=data)
 
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            if check_owner_exists(data['owner']):
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+            else:
+                return JsonResponse(
+                    {'owner': "Must be an existing cpf or cnpj."},
+                    status=400,
+                )
+
         return JsonResponse(serializer.errors, status=400)
 
 
@@ -117,8 +135,15 @@ def legal_people_detail(request, id):
         data = JSONParser().parse(request)
         serializer = LegalPersonSerializer(legal_person, data=data)
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
+            if check_owner_exists(data['owner']):
+                serializer.save()
+                return JsonResponse(serializer.data, status=200)
+            else:
+                return JsonResponse(
+                    {'owner': "Must be an existing cpf or cnpj."},
+                    status=400,
+                )
+
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
@@ -144,8 +169,15 @@ def goods_list(request):
         serializer = GoodSerializer(data=data)
 
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            if check_owner_exists(data['owner']):
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+            else:
+                return JsonResponse(
+                    {'owner': "Must be an existing cpf or cnpj."},
+                    status=400,
+                )
+
         return JsonResponse(serializer.errors, status=400)
 
 
@@ -170,8 +202,15 @@ def goods_detail(request, id):
         data = JSONParser().parse(request)
         serializer = GoodSerializer(good, data=data)
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
+            if check_owner_exists(data['owner']):
+                serializer.save()
+                return JsonResponse(serializer.data, status=200)
+            else:
+                return JsonResponse(
+                    {'owner': "Must be an existing cpf or cnpj."},
+                    status=400,
+                )
+
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':

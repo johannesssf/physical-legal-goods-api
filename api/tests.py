@@ -1,5 +1,6 @@
 import json
 
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from model_bakery import baker
@@ -14,50 +15,61 @@ from .serializers import (
 )
 
 
-class PhysicalPersonModelTest(TestCase):
-    """Tests to validade the model."""
+PHYSICAL_PERSON_DATA = {
+    "cpf": "25845675391",
+    "name": "Fulano Sem Sobrenome",
+    "email": "fulanosemnome@email.com",
+    "zipcode": "55632578",
+    "phone_number": "48666325147",
+}
+LEGAL_PERSON_DATA = {
+    "cnpj": "12345678900033",
+    "social_reason": "Super Company",
+    "fantasy_name": "Some Fantasy Name",
+    "state_registration": "123456789555",
+    "zipcode": "12345678",
+    "email": "supercompany@email.com",
+    "phone_number": "11234567893",
+    "owner": PHYSICAL_PERSON_DATA["cpf"]
+}
 
-    def test_physical_person_creation(self):
+GOOD_DATA = {
+    "good_type": "automovel",
+    "description": "Fusca 66",
+    "owner": LEGAL_PERSON_DATA["cnpj"]
+}
+
+
+class TestAPIModels(TestCase):
+    """Tests to validade the API models."""
+
+    def test_physical_person_fields_validation(self):
         physical_person = PhysicalPerson.objects.create(
-            cpf="25845675391",
+            cpf="a5845675391",
             name="Fulando Mais Sobrenome",
-            zipcode="12345678",
+            zipcode="a2345678",
             email="fulano@email.com",
-            phone_number="11234567890"
+            phone_number="a1234567890"
         )
-        self.assertIsNotNone(physical_person)
+        with self.assertRaises(ValidationError):
+            physical_person.full_clean()
 
-
-class LegalPersonModelTest(TestCase):
-    """Tests to validade the model."""
-
-    def test_legal_person_creation(self):
+    def test_legal_person_fields_validation(self):
         legal_person = LegalPerson.objects.create(
-            cnpj="12345678900013",
+            cnpj="123456789000AA",
             social_reason="Minha Super Empresa",
             fantasy_name="Nome Fantasia",
-            state_registration="123456789012",
-            zipcode="12345678",
+            state_registration="123456789AAA",
+            zipcode="1234567A",
             email="fulano@email.com",
-            phone_number="11234567890",
-            owner="25845675391"
+            phone_number="1123456789A",
+            owner="123456789",
         )
-        self.assertIsNotNone(legal_person)
+        with self.assertRaises(ValidationError):
+            legal_person.full_clean()
 
 
-class GoodModelTest(TestCase):
-    """Tests to validade the model."""
-
-    def test_good_creation(self):
-        good = Good.objects.create(
-            good_type="imovel",
-            description="Apartamento localizado na rua X número Y.",
-            owner="12345678900018"
-        )
-        self.assertIsNotNone(good)
-
-
-class APIAuthentication(TestCase):
+class TestAPIAuthentication(TestCase):
     """Tests the authentication access behavior."""
 
     def setUp(self):
@@ -89,19 +101,26 @@ class APIAuthentication(TestCase):
         self.assertEquals(request.status_code, status.HTTP_200_OK)
 
 
-class PhysicalPeopleAPITest(TestCase):
-    """Tests to cover the physical-people endpoints."""
-
-    RECORDS_NUM = 4
+class TestAPIEndpoints(TestCase):
+    """Tests the API endpoints."""
 
     def setUp(self):
         admin = get_user_model().objects.create(username='admin')
         self.client = APIClient()
         self.client.force_authenticate(user=admin)
 
-        for _ in range(self.RECORDS_NUM):
-            physical_person = baker.make(PhysicalPerson)
-            physical_person.save()
+        # A valid physical person used in tests
+        self.physical_person = PhysicalPerson.objects.create(
+            **PHYSICAL_PERSON_DATA,
+        )
+
+        self.legal_person = LegalPerson.objects.create(
+            **LEGAL_PERSON_DATA,
+        )
+
+        self.good = Good.objects.create(
+            **GOOD_DATA,
+        )
 
     def test_physical_people_get_list(self):
         records = PhysicalPerson.objects.all()
@@ -158,7 +177,9 @@ class PhysicalPeopleAPITest(TestCase):
     def test_physical_people_put(self):
         record = PhysicalPerson.objects.get(pk=1)
         data = PhysicalPersonSerializer(record).data
-        data['zipcode'] = '11222333'
+        data['cpf'] = '25632141235'
+        data['zipcode'] = '88563214'
+        data['phone_number'] = '63222125478'
         request = self.client.put(
             f'/v1/physical-people/{data["id"]}/',
             json.dumps(data),
@@ -187,20 +208,6 @@ class PhysicalPeopleAPITest(TestCase):
         records = PhysicalPerson.objects.filter(pk=1)
         self.assertEquals(len(records), 0)
 
-
-class LegalPeopleAPITest(TestCase):
-    """Tests to cover the legal-people endpoints."""
-    RECORDS_NUM = 4
-
-    def setUp(self):
-        admin = get_user_model().objects.create(username='admin')
-        self.client = APIClient()
-        self.client.force_authenticate(user=admin)
-
-        for _ in range(self.RECORDS_NUM):
-            physical_person = baker.make(LegalPerson)
-            physical_person.save()
-
     def test_legal_people_get_list(self):
         records = LegalPerson.objects.all()
         request = self.client.get('/v1/legal-people/')
@@ -209,16 +216,16 @@ class LegalPeopleAPITest(TestCase):
         self.assertEquals(len(json.loads(request.content)), len(records))
 
     def test_legal_people_post(self):
-        new_record = {
+        new_record = LegalPersonSerializer({
             'cnpj': '00012345600019',
             'social_reason': 'Some New Company',
             'fantasy_name': 'Company Fantasy Name',
-            'state_registration': '0123456789',
-            'owner': '25845675391',
+            'state_registration': '256396584',
             'zipcode': '88456329',
             'email': 'newcompany@email.com',
-            'phone_number': '51988853214'
-        }
+            'phone_number': '51988853214',
+            'owner': self.physical_person.cpf,
+        }).data
         request = self.client.post(
             '/v1/legal-people/',
             json.dumps(new_record),
@@ -228,9 +235,27 @@ class LegalPeopleAPITest(TestCase):
         legal_person = LegalPerson.objects.get(cnpj=new_record['cnpj'])
         self.assertEquals(legal_person.cnpj, new_record['cnpj'])
 
-    def test_legal_people_post_invalid_cnpj(self):
+    def test_legal_people_post_invalid_data(self):
         new_record = LegalPersonSerializer(baker.make(LegalPerson)).data
-        new_record['cnpj'] = '321654987654321111'
+
+        request = self.client.post(
+            '/v1/legal-people/',
+            json.dumps(new_record),
+            content_type='application/json'
+        )
+        self.assertEquals(request.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_legal_people_post_invalid_owner(self):
+        new_record = LegalPersonSerializer({
+            "cnpj": "12365447833325",
+            "social_reason": "Super Company",
+            "fantasy_name": "Some Fantasy Name",
+            "state_registration": "125695478",
+            "zipcode": "12345678",
+            "email": "supercompany@email.com",
+            "phone_number": "11234567893",
+            "owner": "22255599977",
+        }).data
 
         request = self.client.post(
             '/v1/legal-people/',
@@ -259,10 +284,14 @@ class LegalPeopleAPITest(TestCase):
         request = self.client.get(f'/v1/legal-people/{999}/')
         self.assertEquals(request.status_code, 404)
 
-    def test_physical_people_put(self):
+    def test_legal_people_put(self):
         record = LegalPerson.objects.get(pk=1)
         data = LegalPersonSerializer(record).data
-        data['zipcode'] = '11222333'
+        data['cnpj'] = '32854762302108'
+        data['state_registration'] = '562547853'
+        data['zipcode'] = '88963258'
+        data['phone_number'] = '554855632685'
+        data['owner'] = self.physical_person.cpf
         request = self.client.put(
             f'/v1/legal-people/{data["id"]}/',
             json.dumps(data),
@@ -291,21 +320,6 @@ class LegalPeopleAPITest(TestCase):
         records = LegalPerson.objects.filter(pk=1)
         self.assertEquals(len(records), 0)
 
-
-class GoodsAPITest(TestCase):
-    """Tests to cover the goods endpoints."""
-
-    RECORDS_NUM = 4
-
-    def setUp(self):
-        admin = get_user_model().objects.create(username='admin')
-        self.client = APIClient()
-        self.client.force_authenticate(user=admin)
-
-        for _ in range(self.RECORDS_NUM):
-            good = baker.make(Good)
-            good.save()
-
     def test_goods_get_list(self):
         records = Good.objects.all()
         request = self.client.get('/v1/goods/')
@@ -314,11 +328,11 @@ class GoodsAPITest(TestCase):
         self.assertEquals(len(json.loads(request.content)), len(records))
 
     def test_goods_post(self):
-        new_record = {
+        new_record = GoodSerializer({
             'good_type': 'imovel',
             'description': 'Some good description',
-            'owner': '25845675391'
-        }
+            'owner': self.physical_person.cpf
+        }).data
         request = self.client.post(
             '/v1/goods/',
             json.dumps(new_record),
@@ -327,6 +341,19 @@ class GoodsAPITest(TestCase):
         self.assertEquals(request.status_code, status.HTTP_201_CREATED)
         good = Good.objects.get(description=new_record['description'])
         self.assertEquals(good.description, new_record['description'])
+
+    def test_goods_post_invalid_owner(self):
+        new_record = GoodSerializer({
+            'good_type': 'empresa',
+            'description': 'Some good description',
+            'owner': '25632600014526'
+        }).data
+        request = self.client.post(
+            '/v1/goods/',
+            json.dumps(new_record),
+            content_type='application/json'
+        )
+        self.assertEquals(request.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_goods_post_invalid_type(self):
         new_record = GoodSerializer(baker.make(Good)).data
@@ -357,7 +384,7 @@ class GoodsAPITest(TestCase):
     def test_goods_put(self):
         record = Good.objects.get(pk=1)
         data = GoodSerializer(record).data
-        data['owner'] = '25845675391'
+        data['owner'] = self.physical_person.cpf
         request = self.client.put(
             f'/v1/goods/{data["id"]}/',
             json.dumps(data),

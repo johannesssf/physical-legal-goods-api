@@ -27,4 +27,9 @@ class LegalPersonSerializer(serializers.ModelSerializer):
 class GoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Good
-        fields = ['id', 'good_type', 'description', 'owner']
+        fields = [
+            'id',
+            'good_type',
+            'description',
+            'owner',
+        ]
