@@ -274,7 +274,10 @@ class TestAPIEndpoints(TestCase):
         self.assertEquals(record.cnpj, data['cnpj'])
         self.assertEquals(record.social_reason, data['social_reason'])
         self.assertEquals(record.fantasy_name, data['fantasy_name'])
-        self.assertEquals(record.state_registration, data['state_registration'])
+        self.assertEquals(
+            record.state_registration,
+            data['state_registration'],
+        )
         self.assertEquals(record.owner, data['owner'])
         self.assertEquals(record.zipcode, data['zipcode'])
         self.assertEquals(record.email, data['email'])
