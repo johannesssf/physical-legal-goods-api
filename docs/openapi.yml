@@ -43,12 +43,6 @@ paths:
 
         '400':
           description: Parâmetros obrigatórios ausentes ou com valores inválidos
-          content:
-            application/json:
-              example:
-                {
-                  "message": "Parâmetros faltando ou com valores inválidos"
-                }
 
   /physical-people/{id}/:
     parameters:
@@ -85,12 +79,7 @@ paths:
           description: Registro atualizado com sucesso
         '400':
           description: Parâmetros obrigatórios ausentes ou com valores errados
-          content:
-            application/json:
-              example:
-                {
-                  "message": "Parâmetros faltando ou com valores inválidos"
-                }
+
     delete:
       description: Remove o registro da pessoa física com o Id informado
       responses:
@@ -132,12 +121,6 @@ paths:
 
         '400':
           description: Parâmetros obrigatórios ausentes ou com valores inválidos
-          content:
-            application/json:
-              example:
-                {
-                  "message": "Parâmetros faltando ou com valores inválidos"
-                }
 
   /legal-people/{id}/:
     parameters:
@@ -174,12 +157,7 @@ paths:
           description: Registro atualizado com sucesso
         '400':
           description: Parâmetros obrigatórios ausentes ou com valores errados
-          content:
-            application/json:
-              example:
-                {
-                  "message": "Parâmetros faltando ou com valores inválidos"
-                }
+
     delete:
       description: Remove o registro da pessoa jurídica com o Id informado
       responses:
@@ -221,12 +199,6 @@ paths:
 
         '400':
           description: Parâmetros obrigatórios ausentes ou com valores inválidos
-          content:
-            application/json:
-              example:
-                {
-                  "message": "Parâmetros faltando ou com valores inválidos"
-                }
 
   /goods/{id}/:
     parameters:
@@ -263,12 +235,6 @@ paths:
           description: Registro atualizado com sucesso
         '400':
           description: Parâmetros obrigatórios ausentes ou com valores errados
-          content:
-            application/json:
-              example:
-                {
-                  "message": "Parâmetros faltando ou com valores inválidos"
-                }
     delete:
       description: Remove o registro do bem com o Id informado
       responses:
@@ -335,7 +301,7 @@ components:
           maxLength: 200
         state_registration:
           type: string
-          pattern: '^\d{9, 12}$'
+          pattern: '^\d{9}$'
         owner:
           type: string
           pattern: '^[\d{11}|\d{14}]$'
