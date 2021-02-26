@@ -96,9 +96,7 @@ Comando para iniciar o container
 Comandos para consultar e criar um registro
 
         $ curl --location --request GET 'http://localhost:8000/v1/physical-people/' --header 'Authorization: Basic YWRtaW46MTIzNDU2'
-
         $ curl -i -X POST http://localhost:8000/v1/physical-people/ -H "Content-Type: application/json" -d '{"cpf": "25845675391", "name": "Fulano da Silva", "zipcode": "55632148", "email": "fulano@email.com", "phone_number": "48999521756"}' --header 'Authorization: Basic YWRtaW46MTIzNDU2'
-
         $ curl -i -X GET http://localhost:8000/v1/physical-people/ --header 'Authorization: Basic YWRtaW46MTIzNDU2'
 
 # Pontos de melhoria
@@ -107,4 +105,4 @@ Comandos para consultar e criar um registro
 * Embora a cobertura esteja em 100%, ainda poderíamos adicionar mais casos para deixar mais robusto;
 * Adicionar endpoints para gerenciar contas de usuário que podem acessar a aplicação;
 * Também podemos adicionar outros tipos de teste;
-*
+* Refatorações para melhorar o código;
